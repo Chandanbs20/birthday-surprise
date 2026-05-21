@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBOM Extractor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green:#0d9f6e;
+            --green-d:#077a54;
+            --green-l:#ecfdf5;
+            --green-mid:#d1fae5;
+            --black:#0a0a0a;
+            --gray:#374151;
+            --gray2:#6b7280;
+            --gray3:#9ca3af;
+            --gray4:#e5e7eb;
+            --gray5:#f3f4f6;
+            --gray6:#f9fafb;
+            --white:#ffffff;
+            --border:#e5e7eb;
+            --radius:10px;
+            --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing:border-box; margin:0; padding:0; }
+
+        body {
+            font-family:"Inter",sans-serif;
+            background:var(--gray6);
+            color:var(--black);
+            min-height:100vh;
+            font-size:15px;
+        }
+
+        header {
+            background:var(--black);
+            padding:0 2rem;
+            display:flex;
+            align-items:center;
+            height:62px;
+            position:sticky;
+            top:0;
+            z-index:100;
+        }
+
+        .h-brand { display:flex; align-items:center; gap:10px; }
+
+        .h-brand-icon {
+            width:32px;
+            height:32px;
+            background:var(--green);
+            border-radius:7px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .h-brand-icon svg {
+            width:17px;
+            height:17px;
+            stroke:white;
+            fill:none;
+            stroke-width:2;
+        }
+
+        .h-brand-name {
+            font-size:1rem;
+            font-weight:700;
+            color:var(--white);
+            letter-spacing:-0.01em;
+        }
+
+        .h-brand-name span { color:var(--green); }
+
+        .h-divider {
+            width:1px;
+            height:20px;
+            background:#2d2d2d;
+            margin:0 14px;
+        }
+
+        .h-tag {
+            font-size:0.68rem;
+            color:#888;
+            font-family:"DM Mono",monospace;
+            letter-spacing:0.06em;
+        }
+
+        .h-right {
+            margin-left:auto;
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+
+        .h-status {
+            display:flex;
+            align-items:center;
+            gap:6px;
+            font-size:0.68rem;
+            color:var(--green);
+            font-family:"DM Mono",monospace;
+            letter-spacing:0.04em;
+        }
+
+        .h-dot {
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            background:var(--green);
+            animation:pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { opacity:1; }
+            50% { opacity:.3; }
+        }
+
+        main {
+            max-width:940px;
+            margin:0 auto;
+            padding:2.5rem 1.5rem 5rem;
+        }
+
+        .hero {
+            margin-bottom:2rem;
+        }
+
+        .hero-eyebrow {
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            font-size:0.7rem;
+            font-weight:600;
+            color:var(--green);
+            background:var(--green-l);
+            border:1px solid var(--green-mid);
+            border-radius:20px;
+            padding:3px 12px;
+            margin-bottom:0.9rem;
+            font-family:"DM Mono",monospace;
+            letter-spacing:0.05em;
+        }
+
+        .hero-eyebrow::before {
+            content:"";
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            background:var(--green);
+        }
+
+        .hero h1 {
+            font-size:2.5rem;
+            font-weight:700;
+            color:var(--black);
+            letter-spacing:-0.03em;
+            line-height:1.15;
+            margin-bottom:0.7rem;
+        }
+
+        .hero h1 em {
+            font-style:normal;
+            color:var(--green);
+        }
+
+        .hero p {
+            font-size:1rem;
+            color:var(--gray2);
+            line-height:1.7;
+            max-width:650px;
+        }
+
+        .card {
+            background:var(--white);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            box-shadow:var(--shadow);
+            overflow:hidden;
+            margin-bottom:1rem;
+        }
+
+        .card-header {
+            padding:0.85rem 1.3rem;
+            border-bottom:1px solid var(--border);
+            display:flex;
+            align-items:center;
+            gap:8px;
+            background:var(--gray5);
+        }
+
+        .chip {
+            font-size:0.62rem;
+            font-weight:700;
+            background:var(--black);
+            color:var(--white);
+            border-radius:4px;
+            padding:2px 7px;
+            font-family:"DM Mono",monospace;
+            letter-spacing:0.05em;
+        }
+
+        .card-header-title {
+            font-size:0.95rem;
+            font-weight:600;
+            color:var(--black);
+        }
+
+        .card-body { padding:1.3rem; }
+
+        .zones {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:1rem;
+        }
+
+        @media(max-width:560px) {
+            .zones { grid-template-columns:1fr; }
+        }
+
+        .zone {
+            border:2px dashed #d1d5db;
+            border-radius:8px;
+            padding:1.5rem 1rem;
+            text-align:center;
+            cursor:pointer;
+            transition:all .2s;
+            position:relative;
+            background:var(--gray6);
+        }
+
+        .zone:hover {
+            border-color:var(--green);
+            background:var(--green-l);
+        }
+
+        .zone.loaded {
+            border-color:var(--green);
+            border-style:solid;
+            background:var(--green-l);
+        }
+
+        .zone input[type=file] {
+            position:absolute;
+            inset:0;
+            opacity:0;
+            cursor:pointer;
+            width:100%;
+            height:100%;
+        }
+
+        .zone-icon {
+            width:40px;
+            height:40px;
+            border-radius:8px;
+            background:var(--white);
+            border:1px solid var(--border);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin:0 auto 10px;
+        }
+
+        .zone-icon svg {
+            width:18px;
+            height:18px;
+            stroke:var(--gray2);
+            fill:none;
+            stroke-width:1.5;
+        }
+
+        .zone:hover .zone-icon svg,
+        .zone.loaded .zone-icon svg {
+            stroke:var(--green);
+        }
+
+        .zone-lbl {
+            font-size:0.88rem;
+            font-weight:600;
+            color:var(--black);
+            margin-bottom:3px;
+        }
+
+        .zone-hint {
+            font-size:0.7rem;
+            color:var(--gray3);
+            font-family:"DM Mono",monospace;
+        }
+
+        .zone-fn {
+            font-size:0.72rem;
+            color:var(--green);
+            margin-top:6px;
+            font-weight:600;
+            word-break:break-word;
+        }
+
+        .zone-badge {
+            position:absolute;
+            top:8px;
+            right:8px;
+            font-size:0.58rem;
+            font-weight:700;
+            color:var(--gray3);
+            background:var(--white);
+            border:1px solid var(--border);
+            border-radius:4px;
+            padding:2px 6px;
+            font-family:"DM Mono",monospace;
+        }
+
+        .zone.loaded .zone-badge {
+            color:var(--green);
+            border-color:var(--green-mid);
+            background:var(--green-l);
+        }
+
+        .divider {
+            height:1px;
+            background:var(--border);
+            margin:1.2rem 0;
+        }
+
+        .submit-row {
+            display:flex;
+            align-items:center;
+            gap:1rem;
+            flex-wrap:wrap;
+        }
+
+        .btn-submit {
+            background:var(--green);
+            color:white;
+            border:none;
+            border-radius:8px;
+            padding:11px 26px;
+            font-size:0.9rem;
+            font-weight:600;
+            cursor:pointer;
+            transition:all .15s;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            letter-spacing:-0.01em;
+        }
+
+        .btn-submit:hover {
+            background:var(--green-d);
+            transform:translateY(-1px);
+            box-shadow:var(--shadow-md);
+        }
+
+        .btn-submit svg {
+            width:15px;
+            height:15px;
+            stroke:white;
+            fill:none;
+            stroke-width:2;
+        }
+
+        .submit-note {
+            font-size:0.72rem;
+            color:var(--gray3);
+            line-height:1.7;
+            font-family:"DM Mono",monospace;
+        }
+
+        .pipeline {
+            margin-top:1.5rem;
+            display:flex;
+            flex-wrap:wrap;
+        }
+
+        .pipe-step {
+            flex:1;
+            min-width:140px;
+            text-align:center;
+            padding:0.85rem 0.4rem;
+            background:var(--white);
+            border:1px solid var(--border);
+            position:relative;
+        }
+
+        .pipe-step:first-child { border-radius:8px 0 0 8px; }
+        .pipe-step:last-child { border-radius:0 8px 8px 0; }
+        .pipe-step + .pipe-step { border-left:none; }
+
+        .pipe-arr {
+            position:absolute;
+            right:-9px;
+            top:50%;
+            width:16px;
+            height:16px;
+            background:var(--white);
+            border-top:1px solid var(--border);
+            border-right:1px solid var(--border);
+            transform:translateY(-50%) rotate(45deg);
+            z-index:2;
+        }
+
+        .pipe-step:last-child .pipe-arr { display:none; }
+
+        .pipe-num {
+            font-size:0.58rem;
+            color:var(--green);
+            font-family:"DM Mono",monospace;
+            margin-bottom:2px;
+            font-weight:600;
+        }
+
+        .pipe-lbl {
+            font-size:0.72rem;
+            font-weight:600;
+            color:var(--gray);
+        }
+
+        footer {
+            position:fixed;
+            bottom:0;
+            right:0;
+            padding:0.6rem 1rem;
+            display:flex;
+            align-items:center;
+            gap:7px;
+            background:rgba(255,255,255,0.95);
+            border-top:1px solid var(--border);
+            border-left:1px solid var(--border);
+            border-top-left-radius:10px;
+        }
+
+        .footer-tag {
+            font-size:0.65rem;
+            color:var(--gray3);
+            font-family:"DM Mono",monospace;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="h-brand">
+        <div class="h-brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/></svg>
+        </div>
+        <div class="h-brand-name">e<span>BOM</span> Extractor</div>
+        <div class="h-divider"></div>
+        <div class="h-tag">UPLOAD</div>
+    </div>
+    <div class="h-right">
+        <div class="h-status"><div class="h-dot"></div>READY</div>
+    </div>
+</header>
+
+<main>
+    <div class="hero">
+        <div class="hero-eyebrow">AUTOMATED EXTRACTION · NORMALIZATION · MATCHING</div>
+        <h1>Convert <em>CAD BOM</em><br>into ERP-ready data</h1>
+        <p>
+            Upload DWG or DXF engineering drawings to extract Bill of Materials, normalize rows into ERP-style fields,
+            match against ITEMDATA, and export a structured matching report with confidence and review status.
+        </p>
+    </div>
+
+    <form action="/process" method="post" enctype="multipart/form-data">
+        <div class="card">
+            <div class="card-header">
+                <span class="chip">INPUT</span>
+                <span class="card-header-title">Upload Files</span>
+            </div>
+
+            <div class="card-body">
+                <div class="zones">
+                    <div class="zone" id="zdwg">
+                        <input type="file" name="file" multiple required onchange="onFile(this,'zdwg','fn-dwg','dwg-badge')">
+                        <div class="zone-badge" id="dwg-badge">REQUIRED</div>
+                        <div class="zone-icon">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        </div>
+                        <div class="zone-lbl">Drawing Files</div>
+                        <div class="zone-hint">DWG / DXF — multiple supported</div>
+                        <div class="zone-fn" id="fn-dwg"></div>
+                    </div>
+
+                    <div class="zone" id="zval">
+                        <input type="file" name="validation_file" accept=".csv,.xlsx,.xls" onchange="onFile(this,'zval','fn-val','val-badge')">
+                        <div class="zone-badge" id="val-badge">OPTIONAL</div>
+                        <div class="zone-icon">
+                            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                        </div>
+                        <div class="zone-lbl">Validation File</div>
+                        <div class="zone-hint">CSV / XLSX / XLS</div>
+                        <div class="zone-fn" id="fn-val"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="submit-row">
+                    <button class="btn-submit" type="submit">
+                        <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+                        Process Files
+                    </button>
+                    <div class="submit-note">
+                        DWG/DXF → Extract BOM → Normalize → Match ERP<br>
+                        Exports include raw extracted CSV, normalized ERP CSV, and matching report
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="pipeline">
+        <div class="pipe-step">
+            <div class="pipe-num">01</div>
+            <div class="pipe-lbl">Upload Drawing</div>
+            <div class="pipe-arr"></div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">02</div>
+            <div class="pipe-lbl">Extract BOM</div>
+            <div class="pipe-arr"></div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">03</div>
+            <div class="pipe-lbl">Normalize ERP Fields</div>
+            <div class="pipe-arr"></div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">04</div>
+            <div class="pipe-lbl">Match ITEMDATA</div>
+            <div class="pipe-arr"></div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">05</div>
+            <div class="pipe-lbl">Export Results</div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-tag">eBOM · MATCHING WORKFLOW</div>
+</footer>
+
+<script>
+    function onFile(input, zoneId, fileNameId, badgeId) {
+        const zone = document.getElementById(zoneId);
+        const fileNameEl = document.getElementById(fileNameId);
+        const badgeEl = document.getElementById(badgeId);
+
+        if (!input.files || input.files.length === 0) {
+            zone.classList.remove("loaded");
+            fileNameEl.textContent = "";
+            if (badgeId === "dwg-badge") {
+                badgeEl.textContent = "REQUIRED";
+            } else {
+                badgeEl.textContent = "OPTIONAL";
+            }
+            return;
+        }
+
+        zone.classList.add("loaded");
+
+        if (input.files.length === 1) {
+            fileNameEl.textContent = input.files[0].name;
+        } else {
+            fileNameEl.textContent = input.files.length + " files selected";
+        }
+
+        badgeEl.textContent = "LOADED";
+    }
+</script>
+
+</body>
+</html>
