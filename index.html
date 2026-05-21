@@ -1,577 +1,987 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eBOM Extractor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --green:#0d9f6e;
-            --green-d:#077a54;
-            --green-l:#ecfdf5;
-            --green-mid:#d1fae5;
-            --black:#0a0a0a;
-            --gray:#374151;
-            --gray2:#6b7280;
-            --gray3:#9ca3af;
-            --gray4:#e5e7eb;
-            --gray5:#f3f4f6;
-            --gray6:#f9fafb;
-            --white:#ffffff;
-            --border:#e5e7eb;
-            --radius:10px;
-            --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md:0 4px 12px rgba(0,0,0,0.08);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NidhiFlix 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --red: #E50914;
+  --bg: #141414;
+  --bg2: #1c1c1c;
+  --bg3: #2a2a2a;
+  --text: #ffffff;
+  --muted: #999999;
+}
 
-        body {
-            font-family:"Inter",sans-serif;
-            background:var(--gray6);
-            color:var(--black);
-            min-height:100vh;
-            font-size:15px;
-        }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-        header {
-            background:var(--black);
-            padding:0 2rem;
-            display:flex;
-            align-items:center;
-            height:62px;
-            position:sticky;
-            top:0;
-            z-index:100;
-        }
+/* ─── LOGO HEADER ─── */
+.logo-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  padding: 20px 52px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+  pointer-events: none;
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  color: var(--red);
+  letter-spacing: 3px;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(229,9,20,0.5);
+}
+.logo-sub {
+  font-size: 0.65rem;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
 
-        .h-brand { display:flex; align-items:center; gap:10px; }
+/* ─── PROFILE SCREEN ─── */
+#profile-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+#profile-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 45%, rgba(229,9,20,0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(229,9,20,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+.profile-who {
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 48px;
+  letter-spacing: 0.5px;
+}
 
-        .h-brand-icon {
-            width:32px;
-            height:32px;
-            background:var(--green);
-            border-radius:7px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
+/* Single profile card */
+.profile-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  cursor: pointer;
+}
+.profile-wrap:hover .p-avatar { border-color: var(--text); transform: scale(1.06); }
+.profile-wrap:hover .p-name { color: var(--text); }
+.p-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  overflow: hidden;
+  background: var(--bg3);
+  transition: border-color 0.22s, transform 0.22s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.p-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.p-avatar-placeholder {
+  font-size: 4rem;
+  line-height: 1;
+}
+.p-name {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
 
-        .h-brand-icon svg {
-            width:17px;
-            height:17px;
-            stroke:white;
-            fill:none;
-            stroke-width:2;
-        }
+/* ─── BROWSE SCREEN ─── */
+#browse-screen {
+  display: none;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
 
-        .h-brand-name {
-            font-size:1rem;
-            font-weight:700;
-            color:var(--white);
-            letter-spacing:-0.01em;
-        }
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  height: 72vh;
+  min-height: 460px;
+  background: var(--bg3);
+  overflow: hidden;
+}
+/* 🔁 REPLACE: uncomment <img class="hero-img"> and remove .hero-placeholder */
+.hero-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0d0d0d 0%, #2a0808 50%, #0d0d0d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7rem;
+  opacity: 0.25;
+}
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-fade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(20,20,20,0.92) 0%, rgba(20,20,20,0.4) 55%, transparent 100%),
+    linear-gradient(to top, rgba(20,20,20,1) 0%, transparent 45%);
+}
+.hero-body {
+  position: absolute;
+  bottom: 90px;
+  left: 52px;
+  max-width: 500px;
+}
+.hero-tag {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 2px;
+  margin-bottom: 18px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.95;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.9);
+  letter-spacing: 1px;
+}
+.hero-desc {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.8);
+  font-weight: 300;
+  margin-bottom: 28px;
+  font-style: italic;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #000;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 32px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+  text-decoration: none;
+}
+.hero-btn:hover { background: rgba(255,255,255,0.82); transform: scale(1.03); }
+.hero-btn .play-icon { font-size: 1.1rem; }
 
-        .h-brand-name span { color:var(--green); }
+/* ─── MESSAGE STRIP ─── */
+.message-strip {
+  margin: 36px 52px 0;
+  padding: 22px 30px;
+  border-left: 4px solid var(--red);
+  background: rgba(229,9,20,0.07);
+  border-radius: 0 6px 6px 0;
+}
+.message-strip .from {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.message-strip .words {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(255,255,255,0.82);
+}
+/* 🔁 REPLACE: edit the message text inside .words */
 
-        .h-divider {
-            width:1px;
-            height:20px;
-            background:#2d2d2d;
-            margin:0 14px;
-        }
+/* ─── MOVIES SECTION ─── */
+.movies-section {
+  margin: 44px 52px 0;
+}
+.section-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 0.2px;
+}
 
-        .h-tag {
-            font-size:0.68rem;
-            color:#888;
-            font-family:"DM Mono",monospace;
-            letter-spacing:0.06em;
-        }
+/* Grid of movie posters */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
 
-        .h-right {
-            margin-left:auto;
-            display:flex;
-            align-items:center;
-            gap:12px;
-        }
+.movie-card {
+  cursor: pointer;
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--bg3);
+  transition: transform 0.25s, box-shadow 0.25s;
+  aspect-ratio: 2/3;
+}
+.movie-card:hover {
+  transform: scale(1.07) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+  z-index: 5;
+}
+.movie-card:hover .card-hover-bar { opacity: 1; }
 
-        .h-status {
-            display:flex;
-            align-items:center;
-            gap:6px;
-            font-size:0.68rem;
-            color:var(--green);
-            font-family:"DM Mono",monospace;
-            letter-spacing:0.04em;
-        }
+/* Poster image — 🔁 REPLACE placeholder div with <img> */
+.poster-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg3);
+  color: var(--muted);
+}
+.poster-placeholder .poster-icon { font-size: 2.6rem; opacity: 0.4; }
+.poster-placeholder .poster-num {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.poster-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-        .h-dot {
-            width:6px;
-            height:6px;
-            border-radius:50%;
-            background:var(--green);
-            animation:pulse 2s infinite;
-        }
+/* Hover overlay bar */
+.card-hover-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+  padding: 28px 10px 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.card-hover-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.card-hover-meta {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.card-hover-cta {
+  margin-top: 8px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
 
-        @keyframes pulse {
-            0%,100% { opacity:1; }
-            50% { opacity:.3; }
-        }
+/* ─── MODAL OVERLAY ─── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.open { display: flex; }
 
-        main {
-            max-width:940px;
-            margin:0 auto;
-            padding:2.5rem 1.5rem 5rem;
-        }
+.modal-box {
+  background: #181818;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: popIn 0.25s cubic-bezier(0.34,1.5,0.64,1) both;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
 
-        .hero {
-            margin-bottom:2rem;
-        }
+/* Modal top: video player area */
+.modal-video-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+}
+.modal-video-area video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Video placeholder shown when no video yet */
+.modal-video-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #1a0808, #2d1010);
+  color: var(--muted);
+}
+.modal-video-placeholder .vid-icon { font-size: 4rem; opacity: 0.35; }
+.modal-video-placeholder .vid-label { font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.5; }
 
-        .hero-eyebrow {
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            font-size:0.7rem;
-            font-weight:600;
-            color:var(--green);
-            background:var(--green-l);
-            border:1px solid var(--green-mid);
-            border-radius:20px;
-            padding:3px 12px;
-            margin-bottom:0.9rem;
-            font-family:"DM Mono",monospace;
-            letter-spacing:0.05em;
-        }
+/* gradient fade over video bottom */
+.modal-video-fade {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to top, #181818 0%, transparent 100%);
+  pointer-events: none;
+}
 
-        .hero-eyebrow::before {
-            content:"";
-            width:6px;
-            height:6px;
-            border-radius:50%;
-            background:var(--green);
-        }
+/* Play button over video */
+.modal-play-btn {
+  position: absolute;
+  bottom: 28px;
+  left: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #000;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 11px 30px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+  z-index: 2;
+}
+.modal-play-btn:hover { background: rgba(255,255,255,0.82); transform: scale(1.04); }
 
-        .hero h1 {
-            font-size:2.5rem;
-            font-weight:700;
-            color:var(--black);
-            letter-spacing:-0.03em;
-            line-height:1.15;
-            margin-bottom:0.7rem;
-        }
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  border: none;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: rgba(0,0,0,0.95); }
 
-        .hero h1 em {
-            font-style:normal;
-            color:var(--green);
-        }
+/* Modal body text */
+.modal-body {
+  padding: 24px 32px 36px;
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.modal-year { font-size: 0.85rem; color: var(--muted); }
+.modal-genre {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(229,9,20,0.15);
+  color: #ff6b6b;
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid rgba(229,9,20,0.3);
+}
+.modal-rating {
+  font-size: 0.82rem;
+  color: #f5c518;
+  font-weight: 500;
+}
+.modal-desc {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.78);
+  font-weight: 300;
+}
+.modal-personal-note {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: rgba(229,9,20,0.06);
+  border-left: 3px solid var(--red);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.87rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+}
 
-        .hero p {
-            font-size:1rem;
-            color:var(--gray2);
-            line-height:1.7;
-            max-width:650px;
-        }
+/* ─── BACK BUTTON ─── */
+#back-btn {
+  display: none;
+  position: fixed;
+  top: 26px; right: 52px;
+  z-index: 200;
+  background: rgba(50,50,50,0.8);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.18s;
+}
+#back-btn:hover { background: rgba(80,80,80,0.9); }
 
-        .card {
-            background:var(--white);
-            border:1px solid var(--border);
-            border-radius:var(--radius);
-            box-shadow:var(--shadow);
-            overflow:hidden;
-            margin-bottom:1rem;
-        }
+/* ─── SCROLL ─── */
+.movies-grid::-webkit-scrollbar { display: none; }
 
-        .card-header {
-            padding:0.85rem 1.3rem;
-            border-bottom:1px solid var(--border);
-            display:flex;
-            align-items:center;
-            gap:8px;
-            background:var(--gray5);
-        }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .movies-grid { grid-template-columns: repeat(3, 1fr); }
+  .logo-bar, .movies-section, .message-strip { padding-left: 24px; padding-right: 24px; }
+  .hero-body { left: 24px; right: 24px; }
+  #back-btn { right: 24px; }
+}
+@media (max-width: 560px) {
+  .movies-grid { grid-template-columns: repeat(2, 1fr); }
+  .modal-body { padding: 18px 20px 28px; }
+  .modal-title { font-size: 1.8rem; }
+}
 
-        .chip {
-            font-size:0.62rem;
-            font-weight:700;
-            background:var(--black);
-            color:var(--white);
-            border-radius:4px;
-            padding:2px 7px;
-            font-family:"DM Mono",monospace;
-            letter-spacing:0.05em;
-        }
-
-        .card-header-title {
-            font-size:0.95rem;
-            font-weight:600;
-            color:var(--black);
-        }
-
-        .card-body { padding:1.3rem; }
-
-        .zones {
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:1rem;
-        }
-
-        @media(max-width:560px) {
-            .zones { grid-template-columns:1fr; }
-        }
-
-        .zone {
-            border:2px dashed #d1d5db;
-            border-radius:8px;
-            padding:1.5rem 1rem;
-            text-align:center;
-            cursor:pointer;
-            transition:all .2s;
-            position:relative;
-            background:var(--gray6);
-        }
-
-        .zone:hover {
-            border-color:var(--green);
-            background:var(--green-l);
-        }
-
-        .zone.loaded {
-            border-color:var(--green);
-            border-style:solid;
-            background:var(--green-l);
-        }
-
-        .zone input[type=file] {
-            position:absolute;
-            inset:0;
-            opacity:0;
-            cursor:pointer;
-            width:100%;
-            height:100%;
-        }
-
-        .zone-icon {
-            width:40px;
-            height:40px;
-            border-radius:8px;
-            background:var(--white);
-            border:1px solid var(--border);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin:0 auto 10px;
-        }
-
-        .zone-icon svg {
-            width:18px;
-            height:18px;
-            stroke:var(--gray2);
-            fill:none;
-            stroke-width:1.5;
-        }
-
-        .zone:hover .zone-icon svg,
-        .zone.loaded .zone-icon svg {
-            stroke:var(--green);
-        }
-
-        .zone-lbl {
-            font-size:0.88rem;
-            font-weight:600;
-            color:var(--black);
-            margin-bottom:3px;
-        }
-
-        .zone-hint {
-            font-size:0.7rem;
-            color:var(--gray3);
-            font-family:"DM Mono",monospace;
-        }
-
-        .zone-fn {
-            font-size:0.72rem;
-            color:var(--green);
-            margin-top:6px;
-            font-weight:600;
-            word-break:break-word;
-        }
-
-        .zone-badge {
-            position:absolute;
-            top:8px;
-            right:8px;
-            font-size:0.58rem;
-            font-weight:700;
-            color:var(--gray3);
-            background:var(--white);
-            border:1px solid var(--border);
-            border-radius:4px;
-            padding:2px 6px;
-            font-family:"DM Mono",monospace;
-        }
-
-        .zone.loaded .zone-badge {
-            color:var(--green);
-            border-color:var(--green-mid);
-            background:var(--green-l);
-        }
-
-        .divider {
-            height:1px;
-            background:var(--border);
-            margin:1.2rem 0;
-        }
-
-        .submit-row {
-            display:flex;
-            align-items:center;
-            gap:1rem;
-            flex-wrap:wrap;
-        }
-
-        .btn-submit {
-            background:var(--green);
-            color:white;
-            border:none;
-            border-radius:8px;
-            padding:11px 26px;
-            font-size:0.9rem;
-            font-weight:600;
-            cursor:pointer;
-            transition:all .15s;
-            display:flex;
-            align-items:center;
-            gap:8px;
-            letter-spacing:-0.01em;
-        }
-
-        .btn-submit:hover {
-            background:var(--green-d);
-            transform:translateY(-1px);
-            box-shadow:var(--shadow-md);
-        }
-
-        .btn-submit svg {
-            width:15px;
-            height:15px;
-            stroke:white;
-            fill:none;
-            stroke-width:2;
-        }
-
-        .submit-note {
-            font-size:0.72rem;
-            color:var(--gray3);
-            line-height:1.7;
-            font-family:"DM Mono",monospace;
-        }
-
-        .pipeline {
-            margin-top:1.5rem;
-            display:flex;
-            flex-wrap:wrap;
-        }
-
-        .pipe-step {
-            flex:1;
-            min-width:140px;
-            text-align:center;
-            padding:0.85rem 0.4rem;
-            background:var(--white);
-            border:1px solid var(--border);
-            position:relative;
-        }
-
-        .pipe-step:first-child { border-radius:8px 0 0 8px; }
-        .pipe-step:last-child { border-radius:0 8px 8px 0; }
-        .pipe-step + .pipe-step { border-left:none; }
-
-        .pipe-arr {
-            position:absolute;
-            right:-9px;
-            top:50%;
-            width:16px;
-            height:16px;
-            background:var(--white);
-            border-top:1px solid var(--border);
-            border-right:1px solid var(--border);
-            transform:translateY(-50%) rotate(45deg);
-            z-index:2;
-        }
-
-        .pipe-step:last-child .pipe-arr { display:none; }
-
-        .pipe-num {
-            font-size:0.58rem;
-            color:var(--green);
-            font-family:"DM Mono",monospace;
-            margin-bottom:2px;
-            font-weight:600;
-        }
-
-        .pipe-lbl {
-            font-size:0.72rem;
-            font-weight:600;
-            color:var(--gray);
-        }
-
-        footer {
-            position:fixed;
-            bottom:0;
-            right:0;
-            padding:0.6rem 1rem;
-            display:flex;
-            align-items:center;
-            gap:7px;
-            background:rgba(255,255,255,0.95);
-            border-top:1px solid var(--border);
-            border-left:1px solid var(--border);
-            border-top-left-radius:10px;
-        }
-
-        .footer-tag {
-            font-size:0.65rem;
-            color:var(--gray3);
-            font-family:"DM Mono",monospace;
-        }
-    </style>
+/* ─── FADE IN ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fadein { animation: fadeUp 0.5s ease both; }
+</style>
 </head>
 <body>
 
-<header>
-    <div class="h-brand">
-        <div class="h-brand-icon">
-            <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/></svg>
-        </div>
-        <div class="h-brand-name">e<span>BOM</span> Extractor</div>
-        <div class="h-divider"></div>
-        <div class="h-tag">UPLOAD</div>
+<!-- Fixed logo -->
+<div class="logo-bar">
+  <div class="logo">NidhiFlix</div>
+  <div class="logo-sub">Curated just for you ✦</div>
+</div>
+
+<!-- Back button (appears in browse) -->
+<button id="back-btn" onclick="goBack()">← Back</button>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — WHO'S WATCHING?
+══════════════════════════════════════ -->
+<div id="profile-screen">
+  <p class="profile-who">Who's watching?</p>
+
+  <div class="profile-wrap fadein" onclick="enterBrowse()">
+    <div class="p-avatar">
+      <!--
+        🔁 TO ADD YOUR PHOTO:
+        Remove the line below and replace with:
+        <img src="nidhi.png" alt="Nidhi">
+      -->
+      <div class="p-avatar-placeholder">🌸</div>
     </div>
-    <div class="h-right">
-        <div class="h-status"><div class="h-dot"></div>READY</div>
+    <span class="p-name">Nidhi</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — BROWSE / MOVIES
+══════════════════════════════════════ -->
+<div id="browse-screen">
+
+  <!-- HERO BANNER (featured movie) -->
+  <div class="hero">
+    <!--
+      🔁 TO ADD HERO IMAGE:
+      Remove <div class="hero-placeholder"> below and uncomment:
+      <img class="hero-img" src="movie1.png" alt="Movie Title">
+    -->
+    <div class="hero-placeholder">🎬</div>
+    <div class="hero-fade"></div>
+    <div class="hero-body">
+      <div class="hero-tag">★ Nidhi's Pick</div>
+      <!-- 🔁 Change to your featured movie title -->
+      <h1 class="hero-title">Movie Title Here</h1>
+      <!-- 🔁 Change to your personal note / movie tagline -->
+      <p class="hero-desc">"The one that made us feel everything. This one's always going to be ours."</p>
+      <button class="hero-btn" onclick="openModal(0)">
+        <span class="play-icon">▶</span> Play
+      </button>
     </div>
-</header>
+  </div>
 
-<main>
-    <div class="hero">
-        <div class="hero-eyebrow">AUTOMATED EXTRACTION · NORMALIZATION · MATCHING</div>
-        <h1>Convert <em>CAD BOM</em><br>into ERP-ready data</h1>
-        <p>
-            Upload DWG or DXF engineering drawings to extract Bill of Materials, normalize rows into ERP-style fields,
-            match against ITEMDATA, and export a structured matching report with confidence and review status.
-        </p>
+  <!-- PERSONAL MESSAGE -->
+  <div class="message-strip">
+    <div class="from">A little note for you 💌</div>
+    <!-- 🔁 REPLACE this message with yours -->
+    <div class="words">"I built this just for you, Nidhi. Every movie here is one I picked thinking of you — some that made me laugh, some that made me cry, and some I just knew you'd love. Press play on any of them. I hope they feel like a warm hug. — With all my love 💕"</div>
+  </div>
+
+  <!-- MOVIES GRID -->
+  <div class="movies-section">
+    <div class="section-label">🎬 Nidhi's Collection</div>
+    <div class="movies-grid">
+
+      <!-- ══ MOVIE 1 ══
+           🔁 poster: replace <div class="poster-placeholder"> with <img class="poster-img" src="movie1.png" alt="Movie 1 Title">
+           🔁 video:  in openModal(), movie 0 → change video src to "movie1.mp4"
+      -->
+      <div class="movie-card" onclick="openModal(0)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie1.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 1</div>
+          <div class="card-hover-meta">2023 · Drama</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 2 ══ -->
+      <div class="movie-card" onclick="openModal(1)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie2.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 2</div>
+          <div class="card-hover-meta">2022 · Romance</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 3 ══ -->
+      <div class="movie-card" onclick="openModal(2)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie3.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 3</div>
+          <div class="card-hover-meta">2021 · Comedy</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 4 ══ -->
+      <div class="movie-card" onclick="openModal(3)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie4.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 4</div>
+          <div class="card-hover-meta">2020 · Adventure</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 5 ══ -->
+      <div class="movie-card" onclick="openModal(4)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie5.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 5</div>
+          <div class="card-hover-meta">2019 · Thriller</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 6 ══ -->
+      <div class="movie-card" onclick="openModal(5)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie6.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 6</div>
+          <div class="card-hover-meta">2022 · Fantasy</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 7 ══ -->
+      <div class="movie-card" onclick="openModal(6)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie7.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 7</div>
+          <div class="card-hover-meta">2018 · Animation</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 8 ══ -->
+      <div class="movie-card" onclick="openModal(7)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie8.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 8</div>
+          <div class="card-hover-meta">2023 · Sci-fi</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 9 ══ -->
+      <div class="movie-card" onclick="openModal(8)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie9.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 9</div>
+          <div class="card-hover-meta">2021 · Mystery</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+      <!-- ══ MOVIE 10 ══ -->
+      <div class="movie-card" onclick="openModal(9)">
+        <div class="poster-placeholder">
+          <div class="poster-icon">🎬</div>
+          <div class="poster-num">movie10.png</div>
+        </div>
+        <div class="card-hover-bar">
+          <div class="card-hover-title">Movie Title 10</div>
+          <div class="card-hover-meta">2024 · Drama</div>
+          <div class="card-hover-cta">▶ Play</div>
+        </div>
+      </div>
+
+    </div><!-- /movies-grid -->
+  </div><!-- /movies-section -->
+
+</div><!-- /browse-screen -->
+
+<!-- ══════════════════════════════════════
+     MODAL — Movie detail + video player
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <!-- Video area -->
+    <div class="modal-video-area" id="modal-video-area">
+      <!--
+        Video is injected here by JS.
+        When you add your .mp4 files, update the movies[] array below.
+      -->
     </div>
 
-    <form action="/process" method="post" enctype="multipart/form-data">
-        <div class="card">
-            <div class="card-header">
-                <span class="chip">INPUT</span>
-                <span class="card-header-title">Upload Files</span>
-            </div>
+    <!-- Play button over video -->
+    <button class="modal-play-btn" id="modal-play-btn" onclick="playVideo()">
+      <span>▶</span> Play Movie
+    </button>
 
-            <div class="card-body">
-                <div class="zones">
-                    <div class="zone" id="zdwg">
-                        <input type="file" name="file" multiple required onchange="onFile(this,'zdwg','fn-dwg','dwg-badge')">
-                        <div class="zone-badge" id="dwg-badge">REQUIRED</div>
-                        <div class="zone-icon">
-                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                        </div>
-                        <div class="zone-lbl">Drawing Files</div>
-                        <div class="zone-hint">DWG / DXF — multiple supported</div>
-                        <div class="zone-fn" id="fn-dwg"></div>
-                    </div>
-
-                    <div class="zone" id="zval">
-                        <input type="file" name="validation_file" accept=".csv,.xlsx,.xls" onchange="onFile(this,'zval','fn-val','val-badge')">
-                        <div class="zone-badge" id="val-badge">OPTIONAL</div>
-                        <div class="zone-icon">
-                            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                        </div>
-                        <div class="zone-lbl">Validation File</div>
-                        <div class="zone-hint">CSV / XLSX / XLS</div>
-                        <div class="zone-fn" id="fn-val"></div>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="submit-row">
-                    <button class="btn-submit" type="submit">
-                        <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
-                        Process Files
-                    </button>
-                    <div class="submit-note">
-                        DWG/DXF → Extract BOM → Normalize → Match ERP<br>
-                        Exports include raw extracted CSV, normalized ERP CSV, and matching report
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <div class="pipeline">
-        <div class="pipe-step">
-            <div class="pipe-num">01</div>
-            <div class="pipe-lbl">Upload Drawing</div>
-            <div class="pipe-arr"></div>
-        </div>
-        <div class="pipe-step">
-            <div class="pipe-num">02</div>
-            <div class="pipe-lbl">Extract BOM</div>
-            <div class="pipe-arr"></div>
-        </div>
-        <div class="pipe-step">
-            <div class="pipe-num">03</div>
-            <div class="pipe-lbl">Normalize ERP Fields</div>
-            <div class="pipe-arr"></div>
-        </div>
-        <div class="pipe-step">
-            <div class="pipe-num">04</div>
-            <div class="pipe-lbl">Match ITEMDATA</div>
-            <div class="pipe-arr"></div>
-        </div>
-        <div class="pipe-step">
-            <div class="pipe-num">05</div>
-            <div class="pipe-lbl">Export Results</div>
-        </div>
+    <!-- Text info -->
+    <div class="modal-body">
+      <div class="modal-title" id="modal-title">Movie Title</div>
+      <div class="modal-meta">
+        <span class="modal-year" id="modal-year">2023</span>
+        <span class="modal-genre" id="modal-genre">Drama</span>
+        <span class="modal-rating" id="modal-rating">★ 8.5</span>
+      </div>
+      <p class="modal-desc" id="modal-desc">
+        Description goes here.
+      </p>
+      <div class="modal-personal-note" id="modal-note">
+        Personal note goes here.
+      </div>
     </div>
-</main>
 
-<footer>
-    <div class="footer-tag">eBOM · MATCHING WORKFLOW</div>
-</footer>
+  </div>
+</div>
 
 <script>
-    function onFile(input, zoneId, fileNameId, badgeId) {
-        const zone = document.getElementById(zoneId);
-        const fileNameEl = document.getElementById(fileNameId);
-        const badgeEl = document.getElementById(badgeId);
+/*
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  🔁 EDIT YOUR 10 MOVIES HERE                                     ║
+  ║                                                                  ║
+  ║  For each movie:                                                 ║
+  ║    title       → movie name                                      ║
+  ║    year        → release year                                    ║
+  ║    genre       → genre label                                     ║
+  ║    rating      → your rating (e.g. "★ 9.0")                     ║
+  ║    poster      → your .png filename (e.g. "movie1.png")          ║
+  ║    video       → your .mp4 filename (e.g. "movie1.mp4")          ║
+  ║    desc        → movie description                               ║
+  ║    note        → your personal message about this movie          ║
+  ╚══════════════════════════════════════════════════════════════════╝
+*/
+const movies = [
+  {
+    title: "Movie Title 1",
+    year: "2023",
+    genre: "Drama",
+    rating: "★ 8.5",
+    poster: "movie1.png",
+    video: "movie1.mp4",
+    desc: "A sweeping story about love, loss, and the unexpected places we find home. Two strangers meet across a lifetime of coincidences and discover that some connections are written in the stars.",
+    note: "💬 This one reminded me of you the moment I watched it. You'll know exactly why."
+  },
+  {
+    title: "Movie Title 2",
+    year: "2022",
+    genre: "Romance",
+    rating: "★ 9.0",
+    poster: "movie2.png",
+    video: "movie2.mp4",
+    desc: "When a chance encounter turns into something neither of them planned, two people must decide whether to hold on or let go. A tender, beautiful, unmissable film.",
+    note: "💬 Watch this one with tea. Trust me."
+  },
+  {
+    title: "Movie Title 3",
+    year: "2021",
+    genre: "Comedy",
+    rating: "★ 7.8",
+    poster: "movie3.png",
+    video: "movie3.mp4",
+    desc: "A laugh-out-loud comedy that somehow sneaks up on you with heart. Perfectly cast, brilliantly written, and impossible not to smile through from start to finish.",
+    note: "💬 I thought of your laugh the entire time I watched this. It suits you."
+  },
+  {
+    title: "Movie Title 4",
+    year: "2020",
+    genre: "Adventure",
+    rating: "★ 8.2",
+    poster: "movie4.png",
+    video: "movie4.mp4",
+    desc: "An epic journey across unknown lands where the greatest discovery isn't treasure — it's what you were willing to leave behind to find it. Stunning visuals, stunning story.",
+    note: "💬 One day we'll go on an adventure like this. Until then — this."
+  },
+  {
+    title: "Movie Title 5",
+    year: "2019",
+    genre: "Thriller",
+    rating: "★ 8.7",
+    poster: "movie5.png",
+    video: "movie5.mp4",
+    desc: "A gripping, edge-of-your-seat thriller that keeps you guessing until the very last frame. Nothing is what it seems, and everyone has a secret. One of the best of its kind.",
+    note: "💬 Don't watch this at 2am alone. Or do. Live a little."
+  },
+  {
+    title: "Movie Title 6",
+    year: "2022",
+    genre: "Fantasy",
+    rating: "★ 8.1",
+    poster: "movie6.png",
+    video: "movie6.mp4",
+    desc: "In a world where magic is slowly disappearing, one girl holds the last spark. A visually breathtaking fantasy epic with a story that stays with you long after the credits roll.",
+    note: "💬 This one felt like it was made for dreamers. So it was made for you."
+  },
+  {
+    title: "Movie Title 7",
+    year: "2018",
+    genre: "Animation",
+    rating: "★ 9.2",
+    poster: "movie7.png",
+    video: "movie7.mp4",
+    desc: "Don't let the animation fool you — this film will wreck you in the best way possible. A masterpiece of storytelling that works for every age, every heart, every mood.",
+    note: "💬 I'm not crying. You're crying. We're both crying."
+  },
+  {
+    title: "Movie Title 8",
+    year: "2023",
+    genre: "Sci-fi",
+    rating: "★ 8.4",
+    poster: "movie8.png",
+    video: "movie8.mp4",
+    desc: "Set in a near future where memories can be traded like goods, one woman goes searching for something money can't buy. Smart, emotional, and visually unlike anything else.",
+    note: "💬 This made me think about everything differently. I think you will too."
+  },
+  {
+    title: "Movie Title 9",
+    year: "2021",
+    genre: "Mystery",
+    rating: "★ 7.9",
+    poster: "movie9.png",
+    video: "movie9.mp4",
+    desc: "A small town, a disappearance, and a detective who doesn't know that the case she's solving is about her own past. Slow-burn, atmospheric, and absolutely worth every minute.",
+    note: "💬 Settle in. This one rewards patience. Just like the good things in life."
+  },
+  {
+    title: "Movie Title 10",
+    year: "2024",
+    genre: "Drama",
+    rating: "★ 8.9",
+    poster: "movie10.png",
+    video: "movie10.mp4",
+    desc: "A quiet film about big feelings. Two people sit across a table and change each other's lives without either of them meaning to. Restrained, human, and deeply moving.",
+    note: "💬 Save this one for when you need to feel something real. It delivers."
+  }
+];
 
-        if (!input.files || input.files.length === 0) {
-            zone.classList.remove("loaded");
-            fileNameEl.textContent = "";
-            if (badgeId === "dwg-badge") {
-                badgeEl.textContent = "REQUIRED";
-            } else {
-                badgeEl.textContent = "OPTIONAL";
-            }
-            return;
-        }
+/* ─── Navigation ─── */
+function enterBrowse() {
+  document.getElementById('profile-screen').style.display = 'none';
+  document.getElementById('browse-screen').style.display = 'block';
+  document.getElementById('back-btn').style.display = 'block';
+}
+function goBack() {
+  document.getElementById('browse-screen').style.display = 'none';
+  document.getElementById('profile-screen').style.display = 'flex';
+  document.getElementById('back-btn').style.display = 'none';
+  closeModal();
+}
 
-        zone.classList.add("loaded");
+/* ─── Modal ─── */
+let currentVideoEl = null;
 
-        if (input.files.length === 1) {
-            fileNameEl.textContent = input.files[0].name;
-        } else {
-            fileNameEl.textContent = input.files.length + " files selected";
-        }
+function openModal(index) {
+  const m = movies[index];
+  const modal = document.getElementById('modal');
+  const videoArea = document.getElementById('modal-video-area');
 
-        badgeEl.textContent = "LOADED";
-    }
+  // Stop any previous video
+  if (currentVideoEl) { currentVideoEl.pause(); currentVideoEl = null; }
+
+  // Fill text
+  document.getElementById('modal-title').textContent = m.title;
+  document.getElementById('modal-year').textContent = m.year;
+  document.getElementById('modal-genre').textContent = m.genre;
+  document.getElementById('modal-rating').textContent = m.rating;
+  document.getElementById('modal-desc').textContent = m.desc;
+  document.getElementById('modal-note').textContent = m.note;
+
+  // Build video area
+  // We try to load the poster as a background and prep the video element
+  videoArea.innerHTML = '';
+
+  const video = document.createElement('video');
+  video.src = m.video;
+  video.poster = m.poster;
+  video.preload = 'metadata';
+  video.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+  video.controls = false;
+
+  // Fallback: if video can't load, show placeholder
+  video.addEventListener('error', () => {
+    videoArea.innerHTML = `
+      <div class="modal-video-placeholder">
+        <div class="vid-icon">🎬</div>
+        <div class="vid-label">${m.video} · Add your video file here</div>
+      </div>`;
+    document.getElementById('modal-play-btn').style.display = 'none';
+  });
+
+  videoArea.appendChild(video);
+  currentVideoEl = video;
+
+  // Fade overlay
+  const fade = document.createElement('div');
+  fade.className = 'modal-video-fade';
+  videoArea.appendChild(fade);
+
+  // Show play button
+  document.getElementById('modal-play-btn').style.display = 'inline-flex';
+
+  // Open
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function playVideo() {
+  if (!currentVideoEl) return;
+  currentVideoEl.controls = true;
+  currentVideoEl.play();
+  document.getElementById('modal-play-btn').style.display = 'none';
+
+  // Fade out the gradient on play
+  const fade = currentVideoEl.parentElement.querySelector('.modal-video-fade');
+  if (fade) fade.style.opacity = '0';
+}
+
+function closeModal() {
+  if (currentVideoEl) { currentVideoEl.pause(); currentVideoEl = null; }
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-
 </body>
 </html>
