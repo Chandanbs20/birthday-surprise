@@ -119,7 +119,7 @@ body {
   position: relative;
   height: 72vh;
   min-height: 460px;
-  background: var(--bg3);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   overflow: hidden;
 }
 .hero-img {
@@ -247,6 +247,36 @@ body {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Poster placeholder style */
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(145deg, #1f1f2e, #16161f);
+  color: #fff;
+}
+.poster-placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+.poster-placeholder-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  max-width: 90%;
+}
+.poster-placeholder-sub {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 8px;
 }
 
 .card-hover-bar {
@@ -534,12 +564,6 @@ body {
 </div>
 
 <script>
-// ------------------------------------------------------------------
-// ALL MOVIE DATA (poster naming: poster_1.png ... poster_8.png)
-// video naming: video_1.mp4 ... video_8.mp4
-// profile avatar: avatar_nidhi.png
-// hero background: hero_bg.png
-// ------------------------------------------------------------------
 const movies = [
   {
     title: "My Safe Place",
@@ -550,13 +574,9 @@ const movies = [
     video: "video_1.mp4",
     desc: `Sometimes, family isn't the people you're born with—it's the people who choose you.
 
-When life became complicated and trust became difficult, Nidhi found two unexpected companions who stood beside her through every high and low. Through countless conversations, laughter that arrived at exactly the right moments, and support that never needed to be asked for, a simple friendship grew into something far more meaningful.
+When life became complicated and trust became difficult, Nidhi found two unexpected companions who stood beside her through every high and low. Together, Nidhi, Vinay, and Teju created a space where they could be completely themselves.
 
-Together, Nidhi, Vinay, and Teju created a space where they could be completely themselves—through every storm, every celebration, and every chapter in between.
-
-A heartwarming story about trust, comfort, loyalty, and the rare people who quietly become your safe place.
-
-Starring: Nidhi, Vinay, Teju | Themes: Trust • Support • Laughter • Memories • Late-Night Talks • Unconditional Friendship | Runtime: A lifetime of memories.`,
+Starring: Nidhi, Vinay, Teju | Themes: Trust • Support • Laughter • Memories | Runtime: A lifetime of memories.`,
     note: "💬 Three people. Countless memories. One safe place. This one will always be yours."
   },
   {
@@ -566,11 +586,9 @@ Starring: Nidhi, Vinay, Teju | Themes: Trust • Support • Laughter • Memori
     rating: "⭐ 10/10",
     poster: "poster_2.png",
     video: "video_2.mp4",
-    desc: `In a universe filled with superheroes, robots, and endless imagination, Baby-Tron knows exactly who the coolest hero is—Dhidhi-Tron.
+    desc: `In a universe filled with superheroes and endless imagination, Baby-Tron knows exactly who the coolest hero is—Dhidhi-Tron.
 
-Whether it's learning something new, sharing adventures, or simply spending time together, every day becomes a mission worth remembering. To him, she's a teacher, a teammate, and the person who can make any ordinary day extraordinary.
-
-A heartwarming story of imagination, laughter, and the unbreakable bond between a little boy and the aunt he looks up to more than anyone else.
+Whether it's learning something new, sharing adventures, or simply spending time together, every day becomes a mission worth remembering.
 
 Tagline: The coolest team in the galaxy.`,
     note: "💬 One tiny hero. One giant role model. The strongest alliance in the Nidhi-Flix universe."
@@ -584,32 +602,28 @@ Tagline: The coolest team in the galaxy.`,
     video: "video_3.mp4",
     desc: `Some people spend years searching for friendships that feel like home. Nidhi and Pooja found theirs by accident.
 
-What began as two strangers meeting in the same house on the same day slowly became a bond built on shared dreams, endless conversations, spontaneous laughter, and an understanding that never needed explanations.
+What began as two strangers meeting in the same house slowly became a bond built on shared dreams, endless conversations, and an understanding that never needed explanations.
 
-Even when life gets busy and days pass without a conversation, nothing really changes. Because some people don't stay close through constant contact—they stay close through certainty.
+"We met as strangers. Somehow, we ended up feeling like family."
 
-"We met as strangers. Somehow, we ended up feeling like family." — Two strangers. One random day. A friendship that felt like home. ❤️
-
-Starring: Nidhi & Pooja | Themes: Shared Dreams • Dance • Laughter • Family • Memories • Unbreakable Bonds`,
-    note: "💬 Two strangers. One random day. A friendship that felt like home. This one's for the people who found family in unexpected places."
+Starring: Nidhi & Pooja | Themes: Shared Dreams • Dance • Laughter • Family • Memories`,
+    note: "💬 Two strangers. One random day. A friendship that felt like home. ❤️"
   },
   {
     title: "Aditi & Naina",
     year: "2024",
-    genre: "Friendship • Coming of Age • Feel-Good Drama",
+    genre: "Friendship • Coming of Age • Feel-Good",
     rating: "⭐ 10/10",
     poster: "poster_4.png",
     video: "video_4.mp4",
     desc: `Some friendships don't begin with similarities. They become them.
 
-What started as two different personalities slowly turned into a friendship built on trust, laughter, endless conversations, and a connection that never needed explanations. When one forgot her spark, the other reminded her where to find it.
-
-Somewhere between shared memories and countless little moments, they stopped being just friends and became mirrors. Not because they were the same. Because they understood each other completely.
+When one forgot her spark, the other reminded her where to find it. Somewhere between shared memories, they stopped being just friends and became mirrors.
 
 "She didn't change me. She reminded me who I was."
 
-Starring: Nidhi & Khushi | Themes: Self-Discovery • Growth • Loyalty • Understanding • Memories • Reflection`,
-    note: "💬 Some people enter your life and leave memories. Some leave a reflection. A story of friendship, growth, and becoming."
+Starring: Nidhi & Khushi | Themes: Self-Discovery • Growth • Loyalty • Understanding`,
+    note: "💬 Some people enter your life and leave memories. Some leave a reflection."
   },
   {
     title: "Fight Club (But With Feelings)",
@@ -620,15 +634,9 @@ Starring: Nidhi & Khushi | Themes: Self-Discovery • Growth • Loyalty • Und
     video: "video_5.mp4",
     desc: `We fight. We forgive. We repeat.
 
-Nidhi and Anish turned disagreements into a competitive sport. From pointless debates and dramatic arguments to unsolicited life advice, these two have spent years proving that friendship and chaos can peacefully coexist.
+Nidhi and Anish turned disagreements into a competitive sport. Every fight ends the same way: with laughter, forgiveness, and another argument waiting just around the corner.
 
-Every fight ends the same way: with laughter, forgiveness, and another argument waiting just around the corner.
-
-They may not always agree. They may not always be right. But they always come back.
-
-A comedy about friendship, loyalty, emotional warfare, and two people who somehow survive each other every single day.
-
-Starring: Nidhi & Anish | Themes: Arguing • Teasing • Forgiveness • Loyalty • Emotional Damage • Unconditional Friendship | Runtime: Depends on the argument.`,
+Starring: Nidhi & Anish | Themes: Arguing • Teasing • Forgiveness • Loyalty | Runtime: Depends on the argument.`,
     note: "💬 We fight. We forgive. We repeat. And somehow, that's exactly why it works."
   },
   {
@@ -640,16 +648,12 @@ Starring: Nidhi & Anish | Themes: Arguing • Teasing • Forgiveness • Loyalt
     video: "video_6.mp4",
     desc: `Some friendships say "take care." Ours says "call me when you reach."
 
-The messages asking if you've eaten. The reminders to drive slowly. The calls that last longer than planned. The quiet check-ins that arrive exactly when they're needed.
-
-For Nidhi, he is someone worth worrying about. For Hitesh, she is more than a friend—she is a mentor, a guide, and one of the people whose advice genuinely matters.
-
-Just the comforting certainty that no matter where life takes them, someone will always be waiting for that message: "Reached home?"
+The messages asking if you've eaten. The reminders to drive slowly. The quiet check-ins that arrive exactly when they're needed.
 
 "Some people make your day better. Some people make sure you get home safely." ❤️
 
-Starring: Nidhi & Hitesh | Themes: Care • Mentorship • Trust • Everyday Moments • Looking Out For Each Other`,
-    note: "💬 Drive slowly. I'm not asking. 😂 — Reached home? Don't make me call twice. A story of all the little things that matter most."
+Starring: Nidhi & Hitesh | Themes: Care • Mentorship • Trust • Everyday Moments`,
+    note: "💬 Drive slowly. I'm not asking. 😂 — Reached home? Don't make me call twice."
   },
   {
     title: "My Everything",
@@ -660,16 +664,12 @@ Starring: Nidhi & Hitesh | Themes: Care • Mentorship • Trust • Everyday Mo
     video: "video_7.mp4",
     desc: `There are people who walk into our lives and change them. Then there are people who give us life itself.
 
-Before every friendship, every dream, every achievement, and every memory, there was her. The woman who taught Nidhi what kindness looks like, what strength feels like, and how love can exist without conditions.
-
-She is her first home, her safest place, her greatest teacher, and the one person whose happiness means more than anything else.
-
-Some bonds can be explained. This one cannot.
+She is her first home, her safest place, her greatest teacher.
 
 "If there is anything beautiful about me, it is because I learned it from her." ❤️
 
 Tagline: My first home. My first teacher. My first hero. My everything.`,
-    note: "💬 To the woman who became my entire world. No amount of words will ever be enough, but this one is for you. Always."
+    note: "💬 To the woman who became my entire world. No amount of words will ever be enough."
   },
   {
     title: "The Little Girl From School",
@@ -678,18 +678,38 @@ Tagline: My first home. My first teacher. My first hero. My everything.`,
     rating: "⭐ 10/10",
     poster: "poster_8.png",
     video: "video_8.mp4",
-    desc: `She was just a little girl from school. The one I saw in corridors. The one who gave me chocolates. The one who wrote friendship quotes in handmade letters.
+    desc: `She was just a little girl from school. The one who gave me chocolates. The one who wrote friendship quotes in handmade letters.
 
-Years passed. Classrooms became memories. Yet somehow, through every version of ourselves, she remained.
-
-The little girl from school became the person whose messages still make me smile. The person whose hugs make the world feel quieter. The person who taught me that friendship isn't measured by how often people talk, but by how deeply they stay connected through time.
+The little girl from school became the person whose messages still make me smile.
 
 "I don't remember the day we met. I just know I'm grateful it happened."
 
-Starring: Chandan & Nidhi | Themes: School Memories • Growing Up • Friendship • Time • Comfort • Loyalty | Runtime: From the school corridor to forever.`,
-    note: "💬 Chocolates. Friendship quotes. Handmade letters. Memories that never left. The little girl from school became one of the most important people in my life."
+Starring: Chandan & Nidhi | Themes: School Memories • Growing Up • Friendship • Time | Runtime: From the school corridor to forever.`,
+    note: "💬 Chocolates. Friendship quotes. Handmade letters. Memories that never left."
   }
 ];
+
+function createPosterElement(movie, index) {
+  const img = document.createElement('img');
+  img.className = 'poster-img';
+  img.src = movie.poster;
+  img.alt = movie.title;
+  
+  // If image fails to load, show placeholder
+  img.onerror = function() {
+    this.style.display = 'none';
+    const placeholder = document.createElement('div');
+    placeholder.className = 'poster-placeholder';
+    placeholder.innerHTML = `
+      <div class="poster-placeholder-icon">🎬</div>
+      <div class="poster-placeholder-title">${movie.title}</div>
+      <div class="poster-placeholder-sub">✨ add poster_${index + 1}.png ✨</div>
+    `;
+    this.parentElement.insertBefore(placeholder, this);
+  };
+  
+  return img;
+}
 
 function buildGrid() {
   const grid = document.getElementById('movies-grid');
@@ -698,14 +718,19 @@ function buildGrid() {
     const card = document.createElement('div');
     card.className = 'movie-card';
     card.setAttribute('onclick', `openModal(${idx})`);
-    card.innerHTML = `
-      <img class="poster-img" src="${movie.poster}" alt="${movie.title}" onerror="this.style.display='none'">
-      <div class="card-hover-bar">
-        <div class="card-hover-title">${movie.title}</div>
-        <div class="card-hover-meta">${movie.year} · ${movie.genre.split('•')[0]}</div>
-        <div class="card-hover-cta">▶ Play</div>
-      </div>
+    
+    const posterImg = createPosterElement(movie, idx);
+    
+    const hoverBar = document.createElement('div');
+    hoverBar.className = 'card-hover-bar';
+    hoverBar.innerHTML = `
+      <div class="card-hover-title">${movie.title}</div>
+      <div class="card-hover-meta">${movie.year} · ${movie.genre.split('•')[0]}</div>
+      <div class="card-hover-cta">▶ Play</div>
     `;
+    
+    card.appendChild(posterImg);
+    card.appendChild(hoverBar);
     grid.appendChild(card);
   });
 }
